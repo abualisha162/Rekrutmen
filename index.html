@@ -19,7 +19,7 @@
         // GANTI LINK DI BAWAH DENGAN URL WEB APP ANDA
         const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxWMamhwBGBpJJaNaOICrtqY0-TOfYG--7rpcpzofisaftnCWqUOYi-ozM9ayvC3MR94w/exec";
 
-        fetch(URL_SCRIPT)
+        fetch(URL_SCRIPT, { method: 'GET' })
             .then(res => res.json())
             .then(data => {
                 document.getElementById('loading').style.display = 'none';
