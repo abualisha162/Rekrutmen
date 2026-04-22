@@ -17,7 +17,7 @@
 
     <script>
         // GANTI LINK DI BAWAH DENGAN URL WEB APP ANDA
-        const URL_SCRIPT = "PASTE_URL_DEPLOYMENT_ANDA_DI_SINI";
+        const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxWMamhwBGBpJJaNaOICrtqY0-TOfYG--7rpcpzofisaftnCWqUOYi-ozM9ayvC3MR94w/exec";
 
         fetch(URL_SCRIPT)
             .then(res => res.json())
