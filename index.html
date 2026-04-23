@@ -966,38 +966,23 @@
          return hari[d.getDay()] + ', ' + d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
       }
 
-      // GANTI DENGAN URL WEB APP ANDA SENDIRI
-      const URL_GAS = "PASTE_URL_WEB_APP_ANDA_DI_SINI";
+      // GANTI DENGAN LINK WEB APP APPS SCRIPT ANDA YANG ASLI!
+      const URL_GAS = "https://script.google.com/macros/s/AKfyc.../exec"; 
 
       function gasRun(funcName) { 
         var args = Array.prototype.slice.call(arguments, 1);
         return new Promise(function(resolve, reject) { 
-          // Jika masih di dalam Google, pakai jalur lama
-          if (typeof google !== 'undefined') {
-             var runner = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject); 
-             runner[funcName].apply(runner, args); 
-          } 
-          // Jika di Vercel, pakai jalur Fetch API
-          else {
-             // Kita bungkus data untuk dikirim via POST
-             var payload = {
-                action: funcName,
-                parameters: args
-             };
-
-             fetch(URL_GAS, {
+            fetch(URL_GAS, {
                 method: "POST",
-                body: JSON.stringify(payload),
-                // Mode text/plain penting untuk menghindari blokir CORS
+                body: JSON.stringify({ action: funcName, parameters: args }),
                 headers: { "Content-Type": "text/plain;charset=utf-8" } 
-             })
-             .then(res => res.json())
-             .then(data => {
+            })
+            .then(res => res.json())
+            .then(data => {
                 if (data.error) reject(data.error);
                 else resolve(data.result);
-             })
-             .catch(err => reject(err));
-          }
+            })
+            .catch(err => reject(err));
         }); 
       }
 
@@ -4012,18 +3997,20 @@
           if (!u || !p) return Swal.fire('Oops', 'Isi username & password', 'warning');
           
           showFullPageLoading('Validasi...');
-          if (typeof google === 'undefined') { 
-              setTimeout(function() { 
-                  hideFullPageLoading(); 
-                  Swal.fire('Mode Simulasi', 'Gunakan link Test Deployments dari Google Apps Script untuk mencoba fitur login.', 'info'); 
-              }, 800); 
-          } else { 
-              gasRun('loginUser', u, p).then(function(res) { 
-                  hideFullPageLoading(); 
-                  if (res.success) { Auth.login(res.token, res.user, _authKey); checkLoginState(); } 
-                  else Swal.fire('Ditolak', res.message, 'error'); 
-              }).catch(hideFullPageLoading); 
-          }
+          
+          // LANGSUNG TEMBAK KE GOOGLE APPS SCRIPT (Abaikan Mode Simulasi)
+          gasRun('loginUser', u, p).then(function(res) { 
+              hideFullPageLoading(); 
+              if (res.success) { 
+                 Auth.login(res.token, res.user, _authKey); 
+                 checkLoginState(); 
+              } else {
+                 Swal.fire('Ditolak', res.message, 'error'); 
+              }
+          }).catch(function(err) {
+              hideFullPageLoading();
+              Swal.fire('Error Koneksi', 'Gagal terhubung ke Server: ' + err, 'error');
+          }); 
         };
 
         window.logout = function(skip) { 
