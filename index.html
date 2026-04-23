@@ -973,8 +973,9 @@
          return hari[d.getDay()] + ', ' + d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
       }
 
-      // GANTI DENGAN LINK WEB APP APPS SCRIPT ANDA YANG ASLI!
-      const URL_GAS = "https://script.google.com/macros/s/AKfycbxWMamhwBGBpJJaNaOICrtqY0-TOfYG--7rpcpzofisaftnCWqUOYi-ozM9ayvC3MR94w/exec";
+      function gasRun(funcName) { 
+        var args = Array.prototype.slice.call(arguments, 1);
+        return new Promise(function(resolve, reject) {
 
       function gasRun(funcName) { 
         var args = Array.prototype.slice.call(arguments, 1);
@@ -4395,41 +4396,13 @@
        }
     }
 
-    function doPost(e) {
-      try {
-        // Tangkap data yang dikirim dari Vercel
-        var request = JSON.parse(e.postData.contents);
-        var funcName = request.action;
-        var args = request.parameters || [];
-    
-        // Cari fungsi yang diminta (misal: "loginUser", "getPelamar")
-        if (typeof this[funcName] === 'function') {
-          // Jalankan fungsinya dan ambil hasilnya
-          var result = this[funcName].apply(this, args);
-      
-          // Kirim balik hasilnya ke Vercel
-          return ContentService.createTextOutput(JSON.stringify({ result: result }))
-            .setMimeType(ContentService.MimeType.JSON);
-        } else {
-          throw new Error("Fungsi " + funcName + " tidak ditemukan di Apps Script.");
-        }
-      } catch (err) {
-        return ContentService.createTextOutput(JSON.stringify({ error: err.toString() }))
-          .setMimeType(ContentService.MimeType.JSON);
-      }
-    }
-
-    // FUNGSI INI WAJIB ADA AGAR CORS TIDAK DIBLOKIR SAAT PREFLIGHT
-    function doOptions(e) {
-      return ContentService.createTextOutput("")
-        .setMimeType(ContentService.MimeType.TEXT);
-    }
+    .updatePelamarStatus('KONFIRMASI_JADWAL', window.konfPinAktif, statusHadir, alasan);
     } catch (error) {
-            if(btnSukses) btnSukses.disabled = false; 
-            if(btnGagal) btnGagal.disabled = false;
-            Swal.fire('Javascript Error', error.message, 'error');
-        }
-    };
+        if(btnSukses) btnSukses.disabled = false; 
+        if(btnGagal) btnGagal.disabled = false;
+        Swal.fire('Javascript Error', error.message, 'error');
+    }
+   }
   </script>
 </body>
 </html>
