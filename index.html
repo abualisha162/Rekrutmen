@@ -966,7 +966,40 @@
          return hari[d.getDay()] + ', ' + d.getDate() + ' ' + bulan[d.getMonth()] + ' ' + d.getFullYear();
       }
 
-      function gasRun(funcName) { var args = Array.prototype.slice.call(arguments, 1);; return new Promise(function(resolve, reject) { var runner = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject); runner[funcName].apply(runner, args); }); }
+      // GANTI DENGAN URL WEB APP ANDA SENDIRI
+      const URL_GAS = "PASTE_URL_WEB_APP_ANDA_DI_SINI";
+
+      function gasRun(funcName) { 
+        var args = Array.prototype.slice.call(arguments, 1);
+        return new Promise(function(resolve, reject) { 
+          // Jika masih di dalam Google, pakai jalur lama
+          if (typeof google !== 'undefined') {
+             var runner = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject); 
+             runner[funcName].apply(runner, args); 
+          } 
+          // Jika di Vercel, pakai jalur Fetch API
+          else {
+             // Kita bungkus data untuk dikirim via POST
+             var payload = {
+                action: funcName,
+                parameters: args
+             };
+
+             fetch(URL_GAS, {
+                method: "POST",
+                body: JSON.stringify(payload),
+                // Mode text/plain penting untuk menghindari blokir CORS
+                headers: { "Content-Type": "text/plain;charset=utf-8" } 
+             })
+             .then(res => res.json())
+             .then(data => {
+                if (data.error) reject(data.error);
+                else resolve(data.result);
+             })
+             .catch(err => reject(err));
+          }
+        }); 
+      }
 
       
       
@@ -4364,6 +4397,36 @@
            if(btnGagal) btnGagal.disabled = false;
            Swal.fire('Javascript Error', error.message, 'error');
        }
+    }
+
+    function doPost(e) {
+      try {
+        // Tangkap data yang dikirim dari Vercel
+        var request = JSON.parse(e.postData.contents);
+        var funcName = request.action;
+        var args = request.parameters || [];
+    
+        // Cari fungsi yang diminta (misal: "loginUser", "getPelamar")
+        if (typeof this[funcName] === 'function') {
+          // Jalankan fungsinya dan ambil hasilnya
+          var result = this[funcName].apply(this, args);
+      
+          // Kirim balik hasilnya ke Vercel
+          return ContentService.createTextOutput(JSON.stringify({ result: result }))
+            .setMimeType(ContentService.MimeType.JSON);
+        } else {
+          throw new Error("Fungsi " + funcName + " tidak ditemukan di Apps Script.");
+        }
+      } catch (err) {
+        return ContentService.createTextOutput(JSON.stringify({ error: err.toString() }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+
+    // FUNGSI INI WAJIB ADA AGAR CORS TIDAK DIBLOKIR SAAT PREFLIGHT
+    function doOptions(e) {
+      return ContentService.createTextOutput("")
+        .setMimeType(ContentService.MimeType.TEXT);
     }
   </script>
 </body>
