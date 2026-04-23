@@ -4424,6 +4424,12 @@
       return ContentService.createTextOutput("")
         .setMimeType(ContentService.MimeType.TEXT);
     }
-  </script>  
+    } catch (error) {
+            if(btnSukses) btnSukses.disabled = false; 
+            if(btnGagal) btnGagal.disabled = false;
+            Swal.fire('Javascript Error', error.message, 'error');
+        }
+    };
+  </script>
 </body>
 </html>
