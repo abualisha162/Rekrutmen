@@ -974,9 +974,11 @@
       }
 
       // GANTI DENGAN LINK WEB APP APPS SCRIPT ANDA YANG ASLI!
-      const URL_GAS = "https://script.google.com/macros/s/AKfycbxWMamhwBGBpJJaNaOICrtqY0-TOfYG--7rpcpzofisaftnCWqUOYi-ozM9ayvC3MR94w/execfunction gasRun(funcName) { 
-    var args = Array.prototype.slice.call(arguments, 1);
-    return new Promise(function(resolve, reject) { 
+      const URL_GAS = "https://script.google.com/macros/s/AKfycbxWMamhwBGBpJJaNaOICrtqY0-TOfYG--7rpcpzofisaftnCWqUOYi-ozM9ayvC3MR94w/exec";
+
+      function gasRun(funcName) { 
+        var args = Array.prototype.slice.call(arguments, 1);
+      return new Promise(function(resolve, reject) { 
       fetch(URL_GAS, {
          method: "POST",
          body: JSON.stringify({ action: funcName, parameters: args }),
