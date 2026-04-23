@@ -1,34 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Web App Saya</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Portal | HR Recruitment System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
-        .card { border: 1px solid #ccc; padding: 20px; border-radius: 8px; max-width: 400px; }
+        .hero-gradient { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
     </style>
 </head>
-<body>
-    <div class="card">
-        <h1>Data dari Google Sheets</h1>
-        <div id="loading">Memuat data...</div>
-        <pre id="konten"></pre>
-    </div>
+<body class="bg-gray-50 text-gray-900">
+
+    <nav class="bg-white shadow-sm p-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <span class="text-pink-600 text-2xl">💼</span>
+            <span class="font-bold text-xl tracking-tight">Career Portal</span>
+        </div>
+        <div class="space-x-2">
+            <button class="bg-gray-800 text-white px-4 py-2 rounded-full text-sm">Portal Tes</button>
+            <button class="border border-gray-300 px-4 py-2 rounded-full text-sm">Cek Hasil</button>
+        </div>
+    </nav>
+
+    <header class="hero-gradient text-white py-20 px-6 text-center rounded-b-[3rem]">
+        <h1 class="text-4xl font-bold mb-4">Wujudkan Karir Impianmu Bersama Kami</h1>
+        <p class="text-purple-100 mb-8">Temukan posisi yang sesuai dengan passion Anda.</p>
+        <div class="flex justify-center gap-4">
+            <button class="bg-white text-pink-600 px-6 py-3 rounded-full font-bold shadow-lg">LIHAT LOWONGAN ↓</button>
+            <button class="bg-white/20 backdrop-blur-md px-6 py-3 rounded-full font-bold">CEK KESEDIAAN 👥</button>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-8">
+        <h2 class="text-2xl font-bold mb-6">Posisi Tersedia</h2>
+        
+        <div id="loading" class="text-center py-10">
+            <div class="animate-spin text-4xl mb-2">⏳</div>
+            <p>Mencari lowongan terbaru...</p>
+        </div>
+
+        <div id="daftar-lowongan" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            </div>
+    </main>
 
     <script>
-        // GANTI LINK DI BAWAH DENGAN URL WEB APP ANDA
+        // MASUKKAN URL WEB APP ANDA DI SINI
         const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbxWMamhwBGBpJJaNaOICrtqY0-TOfYG--7rpcpzofisaftnCWqUOYi-ozM9ayvC3MR94w/exec";
 
-        fetch(URL_SCRIPT, { method: 'GET' })
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('konten').innerText = JSON.stringify(data, null, 2);
-            })
-            .catch(err => {
-                document.getElementById('loading').innerText = "Gagal memuat data.";
-                console.error(err);
-            });
+        async function muatLowongan() {
+            try {
+                const response = await fetch(URL_SCRIPT);
+                const data = await response.json();
+                
+                document.getElementById('loading').classList.add('hidden');
+                const container = document.getElementById('daftar-lowongan');
+
+                // Contoh menampilkan data dalam bentuk kartu
+                // Jika 'data' mengandung list lowongan, kita looping di sini
+                container.innerHTML = `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <h3 class="font-bold text-lg text-blue-600">Pesan dari Server:</h3>
+                        <p class="text-gray-600 mt-2">${data.pesan}</p>
+                        <p class="text-xs text-gray-400 mt-4 italic">Update terakhir: ${data.waktu}</p>
+                    </div>
+                `;
+            } catch (error) {
+                console.error(error);
+                document.getElementById('loading').innerHTML = "Gagal memuat data dari server.";
+            }
+        }
+
+        muatLowongan();
     </script>
 </body>
 </html>
